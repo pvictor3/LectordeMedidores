@@ -19,7 +19,7 @@ import java.util.List;
 
 public class SearchDevicesUseCase extends BaseObservable<SearchDevicesUseCase.Listener> {
 
-    private boolean mScanning;
+    private static final String TAG = "SearchDevicesUseCase";
 
     public interface Listener{
         void onDevicesFound(Device device);
@@ -38,7 +38,7 @@ public class SearchDevicesUseCase extends BaseObservable<SearchDevicesUseCase.Li
         public void onScanResult(int callbackType, ScanResult result) {
 
             notifySuccess(result);
-            Log.d("Taquito", "onScanResult: Dispositivo encontrado");
+            Log.d(TAG, "onScanResult: Dispositivo encontrado");
         }
 
         @Override
@@ -59,7 +59,7 @@ public class SearchDevicesUseCase extends BaseObservable<SearchDevicesUseCase.Li
     }
 
     public void searchDevicesAndNotify(){
-        Log.d("Taquito", "searchDevicesAndNotify: Buscando dispositivos");
+        Log.d(TAG, "searchDevicesAndNotify: Buscando dispositivos");
         btleScanCallback = new BtleScanCallback();
         bluetoothLeScanner = bluetoothAdapter.getBluetoothLeScanner();
         bluetoothLeScanner.startScan(btleScanCallback);
@@ -68,18 +68,25 @@ public class SearchDevicesUseCase extends BaseObservable<SearchDevicesUseCase.Li
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                bluetoothLeScanner.stopScan(btleScanCallback);
-                btleScanCallback = null;
-                scanning = false;
-                mHandler = null;
-                Log.d("Taquito", "run: Deteniendo scaneo");
+                if(scanning){
+                    bluetoothLeScanner.stopScan(btleScanCallback);
+                    btleScanCallback = null;
+                    scanning = false;
+                    mHandler = null;
+                    Log.d(TAG, "run: Deteniendo scaneo");
+                }
             }
         }, Constants.DELAY_MILLIS);
     }
 
     public void stopScan(){
-        bluetoothLeScanner.stopScan(btleScanCallback);
-        Log.d("Taquito", "stopScan: Deteniendo scaneo");
+        if(scanning){
+            bluetoothLeScanner.stopScan(btleScanCallback);
+            btleScanCallback = null;
+            scanning = false;
+            mHandler = null;
+            Log.d(TAG, "stopScan: Deteniendo scaneo");
+        }
     }
 
     private void notifySuccess(ScanResult result){

@@ -18,6 +18,8 @@ public class SearchDevicesActivity extends BaseActivity
         implements SearchDevicesViewMvcImpl.Listener, SearchDevicesUseCase.Listener{
     private static final int REQUEST_ENABLE_BT = 1000;
     private static final int REQUEST_FINE_LOCATION = 1001;
+    private static final String TAG = "SearchDevicesActivity";
+
     public static void start(Context context){
         Intent intent = new Intent(context, SearchDevicesActivity.class);
         context.startActivity(intent);
@@ -49,6 +51,7 @@ public class SearchDevicesActivity extends BaseActivity
             return;
         }
         searchDevicesUseCase.searchDevicesAndNotify();
+        Log.d(TAG, "onStart: Terminando ONSTART");
     }
 
     private boolean hasPermissions() {
@@ -76,7 +79,7 @@ public class SearchDevicesActivity extends BaseActivity
         super.onStop();
         searchDevicesUseCase.stopScan();
         searchDevicesUseCase.unregisterListener(this);
-        Log.d("Taquito", "onStop: Hola Mundo!");
+        Log.d(TAG, "onStop: Hola Mundo!");
     }
 
     @Override
