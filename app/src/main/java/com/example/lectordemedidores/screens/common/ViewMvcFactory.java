@@ -10,6 +10,8 @@ import com.example.lectordemedidores.screens.searchdevices.SearchDevicesItemView
 import com.example.lectordemedidores.screens.searchdevices.SearchDevicesItemViewMvcImpl;
 import com.example.lectordemedidores.screens.searchdevices.SearchDevicesViewMvc;
 import com.example.lectordemedidores.screens.searchdevices.SearchDevicesViewMvcImpl;
+import com.example.lectordemedidores.screens.showdeviceinfo.ShowDeviceInfoViewMvc;
+import com.example.lectordemedidores.screens.showdeviceinfo.ShowDeviceInfoViewMvcImpl;
 
 public class ViewMvcFactory {
     private final LayoutInflater inflater;
@@ -30,4 +32,7 @@ public class ViewMvcFactory {
         return new SearchDevicesItemViewMvcImpl(inflater, parent);
     }
 
+    public ShowDeviceInfoViewMvc getShowDeviceInfoViewMvc(@Nullable ViewGroup parent){
+        return new ShowDeviceInfoViewMvcImpl(inflater, parent);
+    }
 }

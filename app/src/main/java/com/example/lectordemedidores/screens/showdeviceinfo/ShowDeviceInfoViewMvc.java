@@ -7,12 +7,10 @@ public interface ShowDeviceInfoViewMvc extends ObservableViewMvc<ShowDeviceInfoV
     public interface Listener{
         void onModifyButtonClicked();
         void onConnectButtonClicked();
-        void onValveSwitchClicked();
+        void onValveSwitchClicked(boolean state);
     }
 
     void bindDeviceInfo(DeviceInfo deviceInfo);
-
-    void updateDeviceInfo(DeviceInfo deviceInfo);
 
     void showStateConnection(int state);
 

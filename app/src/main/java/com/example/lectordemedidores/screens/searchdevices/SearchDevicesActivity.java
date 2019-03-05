@@ -13,6 +13,7 @@ import android.util.Log;
 import com.example.lectordemedidores.devices.Device;
 import com.example.lectordemedidores.devices.SearchDevicesUseCase;
 import com.example.lectordemedidores.screens.common.BaseActivity;
+import com.example.lectordemedidores.screens.showdeviceinfo.ShowDeviceInfoActivity;
 
 public class SearchDevicesActivity extends BaseActivity
         implements SearchDevicesViewMvcImpl.Listener, SearchDevicesUseCase.Listener{
@@ -86,6 +87,7 @@ public class SearchDevicesActivity extends BaseActivity
     public void onDeviceClicked(Device device) {
         //Conectar con dispositivo - activty
         mViewMvc.showMessage("Conectando con el dispositivo");
+        ShowDeviceInfoActivity.start(this, device.getAddress());
     }
 
     @Override
