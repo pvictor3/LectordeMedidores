@@ -23,6 +23,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".screens.showdeviceinfo.ShowDeviceInfoActivity" />
+        <service
+            android:name=".devices.BluetoothLeService"
+            android:enabled="true"
+            android:exported="true">
+        </service>
     </application>
 
 </manifest>

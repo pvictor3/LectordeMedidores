@@ -10,6 +10,10 @@ public interface ShowDeviceInfoViewMvc extends ObservableViewMvc<ShowDeviceInfoV
         void onValveSwitchClicked(boolean state);
     }
 
+    void hideDeviceInfo();
+
+    void showDeviceInfo();
+
     void bindDeviceInfo(DeviceInfo deviceInfo);
 
     void showStateConnection(int state);

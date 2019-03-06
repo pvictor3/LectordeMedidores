@@ -70,12 +70,34 @@ public class ShowDeviceInfoViewMvcImpl extends BaseObservableViewMvc<ShowDeviceI
     }
 
     @Override
+    public void hideDeviceInfo() {
+        deviceNumber.setVisibility(View.GONE);
+        brand.setVisibility(View.GONE);
+        counter.setVisibility(View.GONE);
+        battery.setVisibility(View.GONE);
+        valve.setVisibility(View.GONE);
+        newCounter.setVisibility(View.GONE);
+        modifyBtn.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showDeviceInfo() {
+        deviceNumber.setVisibility(View.VISIBLE);
+        brand.setVisibility(View.VISIBLE);
+        counter.setVisibility(View.VISIBLE);
+        battery.setVisibility(View.VISIBLE);
+        valve.setVisibility(View.VISIBLE);
+        newCounter.setVisibility(View.VISIBLE);
+        modifyBtn.setVisibility(View.VISIBLE);
+    }
+
+    @Override
     public void bindDeviceInfo(DeviceInfo deviceInfo) {
         deviceNumber.setText(deviceInfo.getDeviceNumber());
         brand.setText(deviceInfo.getBrand());
         counter.setText(deviceInfo.getCounter());
         battery.setText(deviceInfo.getBattery());
-        if(deviceInfo.getValve().equals("Abierta")){
+        if(deviceInfo.getValve() != null && deviceInfo.getValve().equals("Abierta")){
             valve.setChecked(true);
         }else{
             valve.setChecked(false);

@@ -29,8 +29,17 @@ public class ConnectDeviceUseCase extends BaseObservable<ConnectDeviceUseCase.Li
 
     public interface Listener{
         void onServiceConnectedFailure();
+
+        void onGattConnected();
+
+        void onGattDisconnected();
+
+        void onCharacReadComplete(DeviceInfo deviceInfo);
+
+        void onGattConnecting();
     }
 
+    private Activity activity;
     private String mAddress;
     private HashMap<String,String> charValues;
     private List<BluetoothGattCharacteristic> characteristics;
@@ -38,13 +47,18 @@ public class ConnectDeviceUseCase extends BaseObservable<ConnectDeviceUseCase.Li
 
 
 
-    public ConnectDeviceUseCase(String address, Context context) {
-        mAddress = address;
-        Intent gattServiceIntent = new Intent(context, BluetoothLeService.class);
-        context.bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+    public ConnectDeviceUseCase(Activity activity) {
+        this.activity = activity;
     }
 
-    public void onResume(Activity activity){
+    public void connectDeviceAndNotify(String address){
+        mAddress = address;
+        Intent gattServiceIntent = new Intent(activity.getBaseContext(), BluetoothLeService.class);
+        activity.bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+        Log.d(TAG, "ConnectDeviceUseCase: Creando objeto");
+    }
+
+    public void onResume(){
         activity.registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
         Log.d(TAG, "onResume: BroadcastReceiver registrado!!!");
         if(mBluetoothLeService != null){
@@ -53,12 +67,12 @@ public class ConnectDeviceUseCase extends BaseObservable<ConnectDeviceUseCase.Li
         }
     }
 
-    public void onPause(Activity activity) {
+    public void onPause() {
         Log.d(TAG, "onPause: ");
         activity.unregisterReceiver(mGattUpdateReceiver);
     }
 
-    public void onStop(Activity activity) {
+    public void onStop() {
         Log.d(TAG, "onStop: ");
         activity.unbindService(mServiceConnection);
         mBluetoothLeService = null;
@@ -67,6 +81,7 @@ public class ConnectDeviceUseCase extends BaseObservable<ConnectDeviceUseCase.Li
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.d(TAG, "onServiceConnected: Inicializando");
             mBluetoothLeService = ((BluetoothLeService.LocalBinder) service).getService();
             if(!mBluetoothLeService.initialize()){
                 Log.e(TAG, "onServiceConnected: Unable to initialize Bluetooth");
@@ -74,7 +89,11 @@ public class ConnectDeviceUseCase extends BaseObservable<ConnectDeviceUseCase.Li
                     listener.onServiceConnectedFailure();
                 }
             }
+            Log.d(TAG, "onServiceConnected: Conectando");
             mBluetoothLeService.connect(mAddress);
+            for(Listener listener : getListeners()){
+                listener.onGattConnecting();
+            }
         }
 
         @Override
@@ -88,9 +107,13 @@ public class ConnectDeviceUseCase extends BaseObservable<ConnectDeviceUseCase.Li
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             if(Constants.ACTION_GATT_CONNECTED.equals(action)){
-                // TODO: 04/03/2019
+                for(Listener listener : getListeners()){
+                    listener.onGattConnected();
+                }
             }else if(Constants.ACTION_GATT_DISCONNECTED.equals(action)){
-                // TODO: 04/03/2019
+                for(Listener listener : getListeners()){
+                    listener.onGattDisconnected();
+                }
             }else if(Constants.ACTION_GATT_SERVICES_DISCOVERED.equals(action)){
                 charValues = new HashMap<>();
                 BluetoothGattService service = mBluetoothLeService.getGattService();
@@ -112,8 +135,14 @@ public class ConnectDeviceUseCase extends BaseObservable<ConnectDeviceUseCase.Li
                 if(characteristics.size() > 0){
                     requestCharacteristic();
                 }else{
-                    Toast.makeText(context, "LECTURA COMPLETA DE CHARACTERISTICAS", Toast.LENGTH_LONG).show();
-                    // TODO: 04/03/2019
+                    for(Listener listener : getListeners()){
+                        listener.onCharacReadComplete(new DeviceInfo(charValues.get(Constants.COUNTER_UUID),
+                                charValues.get(Constants.BATTERY_UUID),
+                                charValues.get(Constants.VALVE_UUID),
+                                charValues.get(Constants.DEVICENUMBER_UUID),
+                                charValues.get(Constants.BRAND_UUID)
+                        ));
+                    }
                 }
             }
         }

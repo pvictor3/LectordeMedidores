@@ -3,6 +3,7 @@ package com.example.lectordemedidores.common.dependencyinjection;
 import android.app.Activity;
 import android.view.LayoutInflater;
 
+import com.example.lectordemedidores.devices.ConnectDeviceUseCase;
 import com.example.lectordemedidores.devices.SearchDevicesUseCase;
 import com.example.lectordemedidores.screens.common.ViewMvcFactory;
 
@@ -25,6 +26,10 @@ public class ControllerCompositionRoot {
 
     public SearchDevicesUseCase getSearchDevicesUseCase(){
         return new SearchDevicesUseCase(mActivity);
+    }
+
+    public ConnectDeviceUseCase getConnectDeviceUseCase(){
+        return new ConnectDeviceUseCase(mActivity);
     }
 
 }
